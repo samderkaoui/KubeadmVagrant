@@ -127,7 +127,7 @@ sudo usermod -s "$(command -v zsh)" vagrant
 sudo cp /vagrant/install/.zshrc /home/vagrant/.zshrc
 su - vagrant -c "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
 su - vagrant -c "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-source /home/vagrant/.zshrc
+su - vagrant -c "source /home/vagrant/.zshrc"
 
 # Remarques :
 # - Si vous souhaitez préserver un fichier ~/.zshrc existant, appelez l'installateur avec
