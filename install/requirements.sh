@@ -5,7 +5,7 @@
 # -----------------------------------------------------------------------------
 
 # Variables
-KUBE_REPO_VER="v1.35" # cgroup v1 car almalinux 8 , sinon passer a v 1.31+ avec alma9/10
+KUBE_REPO_VER="v1.35" # cgroup v2 a partir de 1.31, donc alma 8 en 1.30 et -
 
 # Petite fonction d'affichage pour homogénéiser les étapes (cosmétique uniquement)
 info() {
