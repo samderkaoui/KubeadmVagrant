@@ -1,8 +1,7 @@
-# vagrant-k8s-kubeadm - ALMALINUX 9
+# vagrant-k8s-kubeadm — AlmaLinux (tested on 8.8)
 
-`tuto install : https://www.linuxtechi.com/install-kubernetes-on-rockylinux-almalinux/`
-
-`badges : https://gist.github.com/kimjisub/360ea6fc43b82baaf7193175fd12d2f7`
+Tutorial reference: https://www.linuxtechi.com/install-kubernetes-on-rockylinux-almalinux/  
+Badges examples: https://gist.github.com/kimjisub/360ea6fc43b82baaf7193175fd12d2f7
 
 ---
 [![tag](https://img.shields.io/badge/-Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)](none)
@@ -10,70 +9,84 @@
 [![Vagrant](https://img.shields.io/badge/-Vagrant-1868F2?style=flat&logo=vagrant&logoColor=white)](none)
 [![tag](https://img.shields.io/badge/-Shell-FFD500?style=flat&logo=shell&logoColor=white)](none)
 [![tag](https://img.shields.io/badge/-AlmaLinux-000000?style=flat&logo=almalinux&logoColor=white)](none)
-## Overview
 
-Ce projet vise l'installation d'un cluster complet K8s avec un nombre de worker à definir.
+Overview
+--------
 
-Status du projet : 
+This project automates the creation of a complete Kubernetes cluster using Vagrant and VirtualBox, with AlmaLinux nodes. The number of worker nodes is configurable.
 
-- [x] Distribution : Almalinux 8.8
-  - [x] Latest version de kubernetes **(1.30)** supporté par la distribution (car cgroups v1)
-  - [x] Utilisation de Flannel (calico erreur avec interface Virtualbox flemme de creuser => Cilium alma9 :) )
-  - [x] Désactivation firewalld
-  - [x] Ajout Métrics server
-  - [x] Ajout dans script master.sh Un-Taint node master
-  - [x] Ajout Kubernetes Dashboard
-  - [x] Fixer install auto de k9s
-  - [x] Optimisation Almalinux et nettoyage DNF
-  - [x] Ajout kubens/kubectx
-  - [ ] Choisir un Gateway (Ingress trop vieux, on passe à la Gateway API ! 🚀) => [![tag](https://img.shields.io/badge/Istio-466BB0?style=for-the-badge&logo=Istio&logoColor=white)](none)
+Project status
 
-- TO DO
-- [ ] Distribution : Almalinux 9 (car Cilium a besoin du Kernel 5 et Almalinux 8 est en 4.x)
-  - [ ] Basculer de Calico vers Cilium pour passer à une architecture eBPF plus légère et performante : cela réduit l'overhead système en remplaçant kube-proxy et permettra de supprimer les lenteurs d'iptables, obtenir une visibilité totale sur le trafic avec Hubble et de sécuriser les flux au niveau applicatif (L7, plus granulaire, avec HTTP, requetes etc...) plutôt que par simples adresses IP
----
+- Distribution: AlmaLinux 8.8 (tested)
+  - Latest supported Kubernetes version: 1.30 (distribution uses cgroups v1)
+  - Using Flannel for CNI (Calico had issues with VirtualBox interface)
+  - firewalld is disabled in provisioning
+  - Metric Server installed
+  - master.sh now includes untainting of the master node
+  - Kubernetes Dashboard installed
+  - Auto-install fix for k9s
+  - AlmaLinux optimizations and DNF cleanup included
+  - kubens / kubectx installed
+  - Gateway choice pending (Ingress version outdated; moving to Gateway API — Istio proposed)
 
-> **Table of Contents**:
->
-> * [Lancement du cluster](#installer-cluster)
-> * [Configuration](#configuration)
->   * [Ajout workers](#ajout-workers)
->   * [Changer nom worker](#changement-nom-worker)
-> * [Recapitulatif Machines](#recapitulatif-machines)
----
+To do
+- Consider updating to AlmaLinux 9+ (Cilium requires newer kernel)
+  - Migrate from Calico to Cilium for an eBPF-based architecture (removes kube-proxy overhead, better visibility via Hubble, and finer-grained L7 security)
 
-## Installer cluster
+Table of Contents
+- Quick start
+- VirtualBox DHCP fix
+- Configuration
+  - Adding workers
+  - Renaming a worker node
+- Machines summary
+- Credentials
 
-```ruby
+Quick start
+
+Bring the cluster up:
+
+```bash
 vagrant up
 ```
 
-```bash
-# Régler soucis de DHCP sur Virtualbox
-1- Ouvre VirtualBox GUI sur ton host (Ubuntu).
-2- Va dans File → Host Network Manager (ou Preferences → Network sur certaines versions).
-3- Sélectionne l'interface vboxnet0 (celle avec 192.168.56.1).
-4- Clique sur l'onglet DHCP Server.
-5- Décoche "Enable Server" (désactive le DHCP).
-6- Applique (OK).
-```
+VirtualBox DHCP issue (host workaround)
+If you encounter DHCP issues with VirtualBox, on the host machine:
 
-## Configuration
+1. Open the VirtualBox GUI.
+2. Go to File → Host Network Manager (or Preferences → Network).
+3. Select the vboxnet0 adapter (typically 192.168.56.1).
+4. Open the DHCP Server tab.
+5. Uncheck "Enable Server" to disable DHCP.
+6. Apply the change (OK).
 
-### Ajout workers
+Configuration
 
-Changer NodeCount dans le Vagrantfile
+Adding worker nodes
+
+Adjust NodeCount in the Vagrantfile to change the number of worker nodes:
+
 ```ruby
 Vagrant.configure(2) do |config|
-
-  NodeCount = 2  # Changer ici pour ajouter des workers
+  NodeCount = 2  # Change this value to add or remove workers
+  # ...existing code...
+end
 ```
 
+Renaming / labeling a worker node
 
-### Changement nom worker
+To label a worker node (for example to mark it as a worker role):
+
 ```bash
 kubectl label nodes worker1 node-role.kubernetes.io/worker=worker
 ```
 
-## Id/pw
-vagrant/vagrant
+Machines summary
+- ...existing code... (keep your existing machine list or inventory here)
+
+Credentials
+- Username / password for Vagrant boxes: vagrant / vagrant
+
+Notes
+- This repository is intended as a lightweight, local Kubernetes lab environment for testing and learning.
+- If you plan to migrate to AlmaLinux 9/10 or use Cilium, expect kernel and networking changes; test accordingly.

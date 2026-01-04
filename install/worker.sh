@@ -1,14 +1,20 @@
 #!/bin/bash
+# -----------------------------------------------------------------------------
+# worker.sh
+# - Script pour l'ajout d'un nœud worker au cluster créé par master.sh
+# -----------------------------------------------------------------------------
 
-# echo "[TACHE 1] PREREQUIS"
-# sudo firewall-cmd --permanent --add-service=ssh
-# sudo firewall-cmd --permanent --add-port={179,10250,30000-32767}/tcp
-# sudo firewall-cmd --reload
+info() {
+    echo
+    echo "------------------------------------------------------------"
+    echo " $1"
+    echo "------------------------------------------------------------"
+    echo
+}
 
-
-echo "[TACHE 2] REJOINDRE LE NŒUD AU CLUSTER KUBERNETES"
+info "[TACHE 1] REJOINDRE LE NŒUD AU CLUSTER KUBERNETES"
+# Exécute le script généré par le master pour rejoindre le cluster
 bash /vagrant/joincluster.sh 2>/dev/null
-
 
 echo "===================================="
 echo 'run command: vagrant ssh master -c "kubectl get nodes -o wide"'

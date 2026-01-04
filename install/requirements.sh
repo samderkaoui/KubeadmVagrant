@@ -1,8 +1,22 @@
 #!/bin/bash
+# -----------------------------------------------------------------------------
+# requirements.sh
+# - Prépare une VM AlmaLinux/CentOS pour Kubernetes (containerd + kubeadm)
+# -----------------------------------------------------------------------------
+
 # Variables
 KUBE_REPO_VER="v1.35" # cgroup v1 car almalinux 8 , sinon passer a v 1.31+ avec alma9/10
 
-echo "[TACHE 1] PREREQUIS (paquets , SSH, firewall)"
+# Petite fonction d'affichage pour homogénéiser les étapes (cosmétique uniquement)
+info() {
+    echo
+    echo "============================================================"
+    echo " $1"
+    echo "============================================================"
+    echo
+}
+
+info "[TACHE 1] PREREQUIS (paquets , SSH, firewall)"
 #sudo dnf update -y
 sudo dnf install -y dnf-utils
 sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
@@ -10,18 +24,16 @@ sudo dnf install wget git curl vim containerd.io container-selinux kernel-module
 sudo systemctl start containerd
 sudo systemctl enable containerd
 
-
-echo "[TACHE OPTIM] ALLÉGER ALMALINUX de 150Mb environ"
+info "[TACHE OPTIM] ALLÉGER ALMALINUX de 150Mb environ"
+# Désactivation de services non nécessaires pour alléger l'image
 sudo systemctl disable --now firewalld auditd gssproxy irqbalance polkit postfix avahi-daemon cups bluetooth libvirtd rpcbind
 #sudo dnf install -y firewalld
 #sudo systemctl enable --now firewalld
 #sudo firewall-cmd --permanent --add-service=ssh
 #sudo firewall-cmd --reload
 
-
-
-
-echo "[TACHE 2] MODULES KERNEL ET SYSCTL (Indispensable avant containerd)"
+info "[TACHE 2] MODULES KERNEL ET SYSCTL (Indispensable avant containerd)"
+# Chargement des modules nécessaires et réglages sysctl pour Kubernetes
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
@@ -36,23 +48,22 @@ net.ipv4.ip_forward                 = 1
 EOF
 sudo sysctl --system >/dev/null 2>&1
 
-
-echo "[TACHE 3] CONFIGURER CONTAINER RUNTIME (CONTAINERD)"
+info "[TACHE 3] CONFIGURER CONTAINER RUNTIME (CONTAINERD)"
+# Création de la config par défaut puis activation de SystemdCgroup
 mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml >/dev/null
 # Activation du support Systemd pour les Cgroups
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
 sudo systemctl restart containerd
 
-
-echo "[TACHE 4] DISABLE SWAP & SELINUX"
+info "[TACHE 4] DISABLE SWAP & SELINUX"
+# Désactivation swap et passage de SELinux en permissive (pour kubeadm)
 sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 sudo setenforce 0
 sudo sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/sysconfig/selinux
 
-
-echo "[TACHE 5] AJOUT K8S REPO"
+info "[TACHE 5] AJOUT K8S REPO"
 # Note l'utilisation de KUBE_REPO_VER pour le chemin de l'URL
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -63,15 +74,12 @@ gpgcheck=1
 gpgkey=https://pkgs.k8s.io/core:/stable:/${KUBE_REPO_VER}/rpm/repodata/repomd.xml.key
 EOF
 
-
-echo "[TACHE 6] INSTALLER KUBEADM, KUBELET, KUBECTL"
+info "[TACHE 6] INSTALLER KUBEADM, KUBELET, KUBECTL"
 # On utilise dnf install sans les versions si on veut la toute dernière du repo
 sudo dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 sudo systemctl enable --now kubelet
-
-echo "[TACHE 7] SLEEP 10s"
 sleep 10
 
-echo "[TACHE 8] Clean"
+info "[TACHE 7] Clean"
 sudo dnf autoremove
 sudo dnf clean all
