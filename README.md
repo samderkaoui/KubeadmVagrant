@@ -1,4 +1,4 @@
-# vagrant-k8s-kubeadm - ALMALINUX 8 & 10 (switch branch)
+# KubeadmVagrant - ALMALINUX 8 & 10 (switch branch)
 
 `tutorial install : https://www.linuxtechi.com/install-kubernetes-on-rockylinux-almalinux/`
 
