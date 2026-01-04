@@ -4,6 +4,8 @@
 
 `badges : https://gist.github.com/kimjisub/360ea6fc43b82baaf7193175fd12d2f7`
 
+`Choix techno : https://landscape.cncf.io/`
+
 ---
 [![tag](https://img.shields.io/badge/-Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)](none)
 [![tag](https://img.shields.io/badge/-VirtualBox-183A61?style=flat&logo=virtualbox&logoColor=white)](none)
