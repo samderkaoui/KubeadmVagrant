@@ -1,4 +1,4 @@
-# vagrant-k8s-kubeadm - ALMALINUX 10
+# vagrant-k8s-kubeadm - ALMALINUX 8 & 10
 
 `tutorial install : https://www.linuxtechi.com/install-kubernetes-on-rockylinux-almalinux/`
 
@@ -19,7 +19,7 @@ Project status:
 
 - [x] Distribution: AlmaLinux 8.8/8.10 (old / Branch alma8-Flannel)
   - [x] Latest Kubernetes version **(1.30)** supported by the distribution (because cgroups v1)
-  - [x] Use of Flannel (Calico error with VirtualBox interface — too lazy to dig => Cilium on AlmaLinux 9 :) )
+  - [x] Use of Flannel (Calico error with VirtualBox interface — too lazy to dig => Cilium on AlmaLinux 10 :) )
   - [x] Disable firewalld
   - [x] Add Metrics Server
   - [x] Add in master.sh script: Un-Taint master node
@@ -29,7 +29,7 @@ Project status:
   - [x] Add kubens/kubectx
 
 
-- [x] Distribution: AlmaLinux 10 (because Cilium requires Kernel 5+ and AlmaLinux 8 is on 4.x, that's why it is on flannel CNI)
+- [x] Distribution: AlmaLinux 10 (because Cilium requires Kernel 5+ and AlmaLinux 8 is on 4.x)
   - [x] Make scripts cleaner
   - [ ] Choose a Gateway (Ingress too old, switching to the Gateway API! 🚀) => Traefik
   - [ ] Switch from Calico to Cilium to move to a lighter, higher-performance eBPF architecture: this reduces system overhead by replacing kube-proxy, will eliminate iptables slowness, provide full visibility into traffic with Hubble, and secure flows at the application layer (L7, more granular, with HTTP, requests etc.) rather than by simple IP addresses
