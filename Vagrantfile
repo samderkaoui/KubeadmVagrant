@@ -1,8 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-MASTER_MEMORY = 2048
-MASTER_CPUS = 2
+MASTER_MEMORY = 6144
+MASTER_CPUS = 6
 WORKER_MEMORY = 2048
 WORKER_CPUS = 2
 LINKED_CLONE = true
