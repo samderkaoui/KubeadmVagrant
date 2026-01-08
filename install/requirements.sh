@@ -20,7 +20,7 @@ info "[TACHE 1] PREREQUIS (paquets , SSH, firewall)"
 #sudo dnf update -y
 sudo dnf install -y dnf-utils
 sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo dnf install wget git curl vim containerd.io container-selinux kernel-modules kernel-modules-extra -y
+sudo dnf install openssl wget git curl vim containerd.io container-selinux kernel-modules kernel-modules-extra -y
 sudo systemctl start containerd
 sudo systemctl enable containerd
 
