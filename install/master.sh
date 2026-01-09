@@ -100,6 +100,53 @@ subjects:
 EOF
 "
 
+
+
+# Tu as déjà le ServiceAccount + ClusterRoleBinding, il te manque juste le jeton (Bearer Token) à coller dans le dashboard. Voici les deux façons usuelles, selon ta version de `kubectl`.
+
+# ## Méthode 1 : `kubectl create token` (recommandée, K8s récents)
+
+# Sur un cluster récent (1.24+), tu peux simplement faire :
+
+# ```bash
+# su - vagrant -c "kubectl -n kubernetes-dashboard create token dashboard-admin"
+# ```
+
+# La sortie est directement le token à copier/coller dans le champ « Token » du Kubernetes Dashboard (sans guillemets, juste la chaîne).[1][2][3][4]
+
+# ## Méthode 2 : via Secret du ServiceAccount (clusters plus anciens)
+
+# Si `kubectl create token` n’existe pas, tu peux récupérer le token stocké dans le Secret associé :
+
+# 1. Récupérer le nom du Secret lié au SA :
+
+# ```bash
+# su - vagrant -c "kubectl -n kubernetes-dashboard get sa dashboard-admin -o jsonpath='{.secrets[0].name}'"
+# ```
+
+# 2. Afficher le token (base64 → clair) :
+
+# ```bash
+# SECRET_NAME=$(su - vagrant -c "kubectl -n kubernetes-dashboard get sa dashboard-admin -o jsonpath='{.secrets[0].name}'")
+
+# su - vagrant -c "kubectl -n kubernetes-dashboard get secret $SECRET_NAME -o jsonpath='{.data.token}'" | base64 --decode
+# ```
+
+# La valeur décodée est le Bearer Token à coller dans le formulaire de login du Dashboard.[5][6][2][7][8]
+
+# Dans le Dashboard, tu choisis « Token », tu colles la valeur et tu valides.[4]
+
+# [1](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_create/kubectl_create_token/)
+# [2](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/)
+# [3](https://docs.stakepool.dev.br/polygon/kubernetes/access-the-kubernetes-dashboard)
+# [4](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/)
+# [5](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/)
+# [6](https://stackoverflow.com/questions/50553233/how-to-log-in-to-kubernetes-dashboard-ui-with-service-accounts-token)
+# [7](https://labex.io/questions/how-to-get-the-token-for-kubernetes-dashboard-admin-user-23734)
+# [8](https://www.ibm.com/docs/en/cloud-private/3.2.x?topic=kubectl-using-service-account-tokens-connect-api-server)
+# [9](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
+# [10](https://kubernetes.io/blog/2026/01/07/kubernetes-v1-35-csi-sa-tokens-secrets-field-beta/)
+
 info "TACHE 11] Installation kubens et kubectx ohmyzsh"
 sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
 sudo ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
