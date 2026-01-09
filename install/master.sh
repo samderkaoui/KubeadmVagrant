@@ -33,14 +33,14 @@ sleep 5
 
 info "[TACHE 4] DÉPLOYER LE RÉSEAU CALICO"
 su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/calico.yaml"
-sleep 5
+sleep 35
 
 info "[TACHE 5] CONFIGURER CALICO POUR UTILISER LA BONNE INTERFACE RÉSEAU (eth1)"
 kubectl -n kube-system set env daemonset calico-node \
   IP_AUTODETECTION_METHOD="interface=eth1"
 sleep 5
 kubectl -n kube-system rollout restart daemonset calico-node
-sleep 15
+sleep 30
 
 info "[TACHE 6] DÉPLOYER METRICS-SERVER"
 su - vagrant -c "kubectl apply -f /vagrant/manifests/metrics-server.yaml"
