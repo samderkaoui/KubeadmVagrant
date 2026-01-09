@@ -31,16 +31,15 @@ info "[TACHE 3] RETIRER LE TAINT DU MASTER POUR Y DÉPLOYER DES PODS (OPTIONNEL)
 su - vagrant -c "kubectl taint nodes k8s-master node-role.kubernetes.io/control-plane:NoSchedule-"
 sleep 5
 
-info "[TACHE 4] DÉPLOYER LE RÉSEAU FLANNEL"
-su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml"
+info "[TACHE 4] DÉPLOYER LE RÉSEAU CALICO"
+su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/calico.yaml"
 sleep 5
 
-info "[TACHE 5] CONFIGURER FLANNEL POUR UTILISER LA BONNE INTERFACE RÉSEAU (eth1)"
-su - vagrant -c "kubectl patch daemonset kube-flannel-ds -n kube-flannel --type='json' -p='[
-  {\"op\": \"add\", \"path\": \"/spec/template/spec/containers/0/args/-\", \"value\": \"--iface=eth1\"}
-]'
-"
-
+info "[TACHE 5] CONFIGURER CALICO POUR UTILISER LA BONNE INTERFACE RÉSEAU (eth1)"
+kubectl -n kube-system set env daemonset calico-node \
+  IP_AUTODETECTION_METHOD="interface=eth1"
+sleep 5
+kubectl -n kube-system rollout restart daemonset calico-node
 sleep 15
 
 info "[TACHE 6] DÉPLOYER METRICS-SERVER"
